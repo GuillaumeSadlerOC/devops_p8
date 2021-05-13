@@ -1,0 +1,28 @@
+version: '3.7'
+
+services:
+
+  jenkins:
+    container_name: jenkins
+    build: .
+    expose:
+      - 8080
+    volumes:
+        - ./volumes:/var/jenkins_home:rw
+        - /var/run/docker.sock:/var/run/docker.sock
+        - /usr/local/bin/docker:/usr/local/bin/docker
+    labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=traefik_webgateway"
+        - "traefik.http.routers.jenkins.rule=Host(
+            `jenkins.localhost`,
+            )"
+        - "traefik.http.routers.jenkins.entrypoints=jenkins"
+    networks:
+        - traefik_webgateway
+
+networks:
+
+    traefik_webgateway: 
+        external:
+            name: traefik_webgateway
